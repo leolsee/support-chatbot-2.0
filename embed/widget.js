@@ -54,7 +54,7 @@
 
       messages.innerHTML += `<div><b>You:</b> ${message}</div>`;
 
-    const res = await fetch("https://support-chatbot-2-0.vercel.app/api/chat", {
+    const res = await fetch("https://support-chatbot-2-0.vercel.app/api/chat"), {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
