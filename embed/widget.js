@@ -54,20 +54,16 @@
 
       messages.innerHTML += `<div><b>You:</b> ${message}</div>`;
 
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message })
-      });
+    const res = await fetch("https://support-chatbot-2-0.vercel.app/api/chat", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ message })
+});
 
-      const data = await res.json();
+const data = await res.json();
 
-      messages.innerHTML += `<div><b>AI:</b> ${data.reply}</div>`;
+const reply = data.reply || data.response || data.content || "Je réfléchis...";
 
-      messages.scrollTop = messages.scrollHeight;
-    }
-  });
-
-})();
+messages.innerHTML += `<div><b>AI:</b> ${reply}</div>`;
