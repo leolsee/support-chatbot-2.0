@@ -23,10 +23,10 @@
   chat.style.background = "white";
   chat.style.border = "1px solid #ddd";
   chat.style.borderRadius = "10px";
+  chat.style.boxShadow = "0 10px 40px rgba(0,0,0,0.2)";
   chat.style.display = "none";
   chat.style.flexDirection = "column";
   chat.style.zIndex = "999999";
-
 
   chat.innerHTML = `
     <div style="padding:10px;background:black;color:white;border-radius:10px 10px 0 0">
