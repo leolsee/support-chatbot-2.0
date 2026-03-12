@@ -12,6 +12,7 @@
   button.style.borderRadius = "20px";
   button.style.cursor = "pointer";
   button.style.zIndex = "9999";
+  button.style.zIndex = "999999";
 
   const chat = document.createElement("div");
   chat.style.position = "fixed";
@@ -24,6 +25,8 @@
   chat.style.borderRadius = "10px";
   chat.style.display = "none";
   chat.style.flexDirection = "column";
+  chat.style.zIndex = "999999";
+
 
   chat.innerHTML = `
     <div style="padding:10px;background:black;color:white;border-radius:10px 10px 0 0">
