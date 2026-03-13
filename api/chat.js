@@ -21,15 +21,15 @@ export default async function handler(req, res) {
 ]);
 
     const response = await anthropic.messages.create({
-     model: "claude-3-haiku-20240307",
-      max_tokens: 120,
-      messages: [
-        {
-          role: "user",
-          content: message
-        }
-      ]
-    });
+  model: "claude-3-haiku-20240307",
+  max_tokens: 120,
+  messages: [
+    {
+      role: "user",
+      content: message
+    }
+  ]
+});
 
     const reply = response.content[0].text;
 
