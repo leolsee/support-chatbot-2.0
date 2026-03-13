@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   ]
 });
 
-    const reply = response.content[0].text;
+   const reply = response.content?.[0]?.text || "Je n'ai pas de réponse.";
 
 await supabase.from("messages").insert([
   {
