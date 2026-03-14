@@ -56,7 +56,7 @@ Réponds naturellement comme dans une conversation.
   messages: messages
 });
     
-    console.log("REPONSE CLAUDE:", JSON.stringify(response, null, 2));
+    const reply = response.content?.[0]?.text || "Pas de réponse";
 
    const reply = Array.isArray(response?.content)
   ? response.content
