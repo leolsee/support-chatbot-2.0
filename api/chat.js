@@ -60,15 +60,14 @@ export default async function handler(req, res) {
       reply: reply
     });
 
-  } catch (error) {
+ catch (error) {
 
-    console.error("API ERROR:", error);
+console.error("ERREUR API :", error);
 
-    return res.status(500).json({
-      error: "Erreur serveur",
-      details: error.message
-    });
-
-  }
+res.status(500).json({
+error: "Claude API error",
+details: error.message,
+full: error
+});
 
 }
