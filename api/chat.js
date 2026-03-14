@@ -2,25 +2,20 @@ import supabase from "../lib/supabase.js";
 import Anthropic from "@anthropic-ai/sdk";
 
 export default async function handler(req, res) {
-
   try {
 
-    // Vérifier méthode
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method not allowed" });
     }
 
-    // Initialisation Claude
     const anthropic = new Anthropic({
       apiKey: process.env.CLAUDE_API_KEY
     });
 
-    console.log("CLAUDE KEY PRESENT:", !!process.env.CLAUDE_API_KEY);
-
-    // Lecture body
-    const body = typeof req.body === "string"
-      ? JSON.parse(req.body)
-      : req.body;
+    const body =
+      typeof req.body === "string"
+        ? JSON.parse(req.body)
+        : req.body;
 
     const message = body?.message;
 
@@ -28,14 +23,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Message manquant" });
     }
 
-    // Sauvegarde message utilisateur
-    await supabase.from("messages").insert({
-      conversation_id: 1,
-      expediteur: "user",
-      message: message
-    });
+    console.log("MESSAGE RECU:", message);
 
-    // Appel Claude
+    // appel Claude
     const response = await anthropic.messages.create({
       model: "claude-3-haiku-20240307",
       max_tokens: 120,
@@ -47,17 +37,11 @@ export default async function handler(req, res) {
       ]
     });
 
-    // Extraction réponse Claude
-    const reply =
-      response.content?.find(c => c.type === "text")?.text ||
-      "Je n'ai pas de réponse.";
+    console.log("REPONSE CLAUDE:", response);
 
-    // Sauvegarde réponse IA
-    await supabase.from("messages").insert({
-      conversation_id: 1,
-      expediteur: "ai",
-      message: reply
-    });
+    const reply =
+      response?.content?.[0]?.text ||
+      "Claude n'a pas répondu";
 
     return res.status(200).json({
       reply: reply
@@ -65,13 +49,12 @@ export default async function handler(req, res) {
 
   } catch (error) {
 
-    console.error("ERREUR API :", error);
+    console.error("ERREUR COMPLETE:", error);
 
     return res.status(500).json({
-      error: "Claude API error",
-      details: error.message
+      error: error.message,
+      full: error
     });
 
   }
-
 }
