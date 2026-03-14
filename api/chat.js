@@ -15,6 +15,8 @@ export default async function handler(req, res) {
       apiKey: process.env.CLAUDE_API_KEY
     });
 
+    console.log("CLAUDE KEY PRESENT:", !!process.env.CLAUDE_API_KEY);
+
     // Lecture du body
     const body = typeof req.body === "string"
       ? JSON.parse(req.body)
