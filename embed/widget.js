@@ -66,11 +66,13 @@ input.addEventListener("keypress", async (e)=>{
 
 if(e.key === "Enter"){
 
-const message = input.value;
+const message = input.value.trim();
 if(!message) return;
 
 addMessage("You", message);
 input.value = "";
+
+addMessage("AI","Je réfléchis...");
 
 try{
 
@@ -79,21 +81,24 @@ method:"POST",
 headers:{
 "Content-Type":"application/json"
 },
-body:JSON.stringify({message})
+body:JSON.stringify({ message: message })
 });
 
 const data = await res.json();
+
+messages.lastChild.remove();
 
 const reply =
 data.reply ||
 data.response ||
 data.content ||
-"Je réfléchis...";
+"Pas de réponse";
 
 addMessage("AI", reply);
 
 }catch(err){
 
+messages.lastChild.remove();
 addMessage("AI","Erreur serveur");
 
 }
