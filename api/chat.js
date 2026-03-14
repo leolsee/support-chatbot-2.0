@@ -39,9 +39,12 @@ export default async function handler(req, res) {
 
     console.log("REPONSE CLAUDE:", response);
 
-    const reply =
-      response?.content?.[0]?.text ||
-      "Claude n'a pas répondu";
+   const reply = Array.isArray(response?.content)
+  ? response.content
+      .filter(c => c.type === "text")
+      .map(c => c.text)
+      .join("\n")
+  : "Je n'ai pas de réponse.";
 
     return res.status(200).json({
       reply: reply
