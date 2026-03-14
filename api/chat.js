@@ -23,7 +23,6 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Message manquant" });
     }
 
-    // récupérer historique
     const { data: history } = await supabase
       .from("messages")
       .select("expediteur,message")
@@ -42,12 +41,17 @@ export default async function handler(req, res) {
     });
 
     const response = await anthropic.messages.create({
-      model: "claude-sonnet-5-20250514",
+      model: "claude-sonnet-4-20250514",
       max_tokens: 200,
       messages: messages
     });
 
-    const reply = response?.content?.[0]?.text || "Pas de réponse";
+    const reply = Array.isArray(response?.content)
+      ? response.content
+          .filter(c => c.type === "text")
+          .map(c => c.text)
+          .join("\n")
+      : "Pas de réponse";
 
     return res.status(200).json({
       reply: reply
@@ -63,3 +67,4 @@ export default async function handler(req, res) {
 
   }
 }
+
