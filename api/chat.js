@@ -47,7 +47,9 @@ export default async function handler(req, res) {
       ]
     });
 
-    const reply = response?.content?.[0]?.text || "Je n'ai pas de réponse.";
+    const reply =
+response.content.find(c => c.type === "text")?.text ||
+"Pas de réponse";
 
     // Sauvegarde réponse IA
     await supabase.from("messages").insert({
