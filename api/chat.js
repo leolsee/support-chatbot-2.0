@@ -23,13 +23,6 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Message manquant" });
     }
 
-    // sauvegarder message user
-    await supabase.from("messages").insert([
-      conversation_id: 1,
-      expediteur: "user",
-      message: message
-    });
-
     // récupérer historique
     const { data: history } = await supabase
       .from("messages")
@@ -43,34 +36,22 @@ export default async function handler(req, res) {
       content: m.message
     }));
 
-    const systemPrompt = `
-Tu es un assistant de support client.
-Ne répète pas les mêmes phrases.
-Réponds naturellement comme dans une conversation.
-`;
+    messages.push({
+      role: "user",
+      content: message
+    });
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      system: systemPrompt,
       max_tokens: 200,
       messages: messages
     });
 
-    const reply = Array.isArray(response?.content)
-      ? response.content
-          .filter(c => c.type === "text")
-          .map(c => c.text)
-          .join("\n")
-      : "Je n'ai pas de réponse.";
+    const reply = response?.content?.[0]?.text || "Pas de réponse";
 
-    // sauvegarder réponse IA
-    await supabase.from("messages").insert({
-      conversation_id: 1,
-      expediteur: "ai",
-      message: reply
+    return res.status(200).json({
+      reply: reply
     });
-
-    return res.status(200).json({ reply });
 
   } catch (error) {
 
@@ -79,9 +60,6 @@ Réponds naturellement comme dans une conversation.
     return res.status(500).json({
       error: error.message
     });
-
-  }
-}
 
   }
 }
