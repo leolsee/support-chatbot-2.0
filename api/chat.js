@@ -56,9 +56,7 @@ Réponds naturellement comme dans une conversation.
   messages: messages
 });
     
-    const reply = response.content?.[0]?.text || "Pas de réponse";
-
-   const reply = Array.isArray(response?.content)
+    const reply = Array.isArray(response?.content)
   ? response.content
       .filter(c => c.type === "text")
       .map(c => c.text)
