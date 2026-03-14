@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     }
 
     // sauvegarder message user
-    await supabase.from("messages").insert({
+    await supabase.from("messages").insert([
       conversation_id: 1,
       expediteur: "user",
       message: message
