@@ -25,18 +25,37 @@ export default async function handler(req, res) {
 
     console.log("MESSAGE RECU:", message);
 
-    // appel Claude
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 120,
-      messages: [
-        {
-          role: "user",
-          content: message
-        }
-      ]
-    });
+    const { data: history } = await supabase
+  .from("messages")
+  .select("expediteur,message")
+  .eq("conversation_id", 1)
+  .order("id", { ascending: true })
+  .limit(10);
 
+     const messages = history.map(m => ({
+  role: m.expediteur === "user" ? "user" : "assistant",
+  content: m.message
+}));
+
+     messages.push({
+  role: "user",
+  content: message
+});
+
+    const systemPrompt = `
+Tu es un assistant de support client.
+Ne répète pas les mêmes phrases.
+Réponds naturellement comme dans une conversation.
+`;
+    
+    // appel Claude
+ const response = await anthropic.messages.create({
+  model: "claude-sonnet-4-20250514",
+  system: systemPrompt,
+  max_tokens: 200,
+  messages: messages
+});
+    
     console.log("REPONSE CLAUDE:", JSON.stringify(response, null, 2));
 
    const reply = Array.isArray(response?.content)
