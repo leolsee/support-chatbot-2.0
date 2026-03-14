@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       ]
     });
 
-    console.log("REPONSE CLAUDE:", response);
+    console.log("REPONSE CLAUDE:", JSON.stringify(response, null, 2));
 
    const reply = Array.isArray(response?.content)
   ? response.content
