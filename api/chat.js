@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
   try {
 
-    // Sécurité méthode
+    // Vérifier méthode
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method not allowed" });
     }
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
     console.log("CLAUDE KEY PRESENT:", !!process.env.CLAUDE_API_KEY);
 
-    // Lecture du body
+    // Lecture body
     const body = typeof req.body === "string"
       ? JSON.parse(req.body)
       : req.body;
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
     // Appel Claude
     const response = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
+      model: "claude-3-haiku-20240307",
       max_tokens: 120,
       messages: [
         {
@@ -47,7 +47,10 @@ export default async function handler(req, res) {
       ]
     });
 
-    const reply = JSON.stringify(response);
+    // Extraction réponse Claude
+    const reply =
+      response.content?.find(c => c.type === "text")?.text ||
+      "Je n'ai pas de réponse.";
 
     // Sauvegarde réponse IA
     await supabase.from("messages").insert({
@@ -60,14 +63,15 @@ export default async function handler(req, res) {
       reply: reply
     });
 
- catch (error) {
+  } catch (error) {
 
-console.error("ERREUR API :", error);
+    console.error("ERREUR API :", error);
 
-res.status(500).json({
-error: "Claude API error",
-details: error.message,
-full: error
-});
+    return res.status(500).json({
+      error: "Claude API error",
+      details: error.message
+    });
+
+  }
 
 }
