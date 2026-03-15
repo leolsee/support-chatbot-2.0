@@ -41,10 +41,10 @@ export default async function handler(req, res) {
     });
 
     const response = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-latest",
-      max_tokens: 200,
-      messages: messages
-    });
+  model: "claude-3-5-sonnet-latest",
+  max_tokens: 200,
+  messages: messages
+});
 
     const reply = response.content
   .filter(block => block.type === "text")
