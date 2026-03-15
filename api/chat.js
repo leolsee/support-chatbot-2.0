@@ -46,6 +46,8 @@ export default async function handler(req, res) {
   messages: messages
 });
 
+    console.log("REPONSE CLAUDE:", response);
+    
     const reply = response.content
   .filter(block => block.type === "text")
   .map(block => block.text)
