@@ -1,55 +1,27 @@
-import supabase from "../lib/supabase.js";
 import Anthropic from "@anthropic-ai/sdk";
 
 export default async function handler(req, res) {
-  try {
 
-    if (req.method !== "POST") {
-      return res.status(405).json({ error: "Method not allowed" });
-    }
+  try {
 
     const anthropic = new Anthropic({
       apiKey: process.env.CLAUDE_API_KEY
     });
 
-    const body =
-      typeof req.body === "string"
-        ? JSON.parse(req.body)
-        : req.body;
-
-    const message = body?.message;
-
-    if (!message) {
-      return res.status(400).json({ error: "Message manquant" });
-    }
-
-    const { data: history } = await supabase
-      .from("messages")
-      .select("expediteur,message")
-      .eq("conversation_id", 1)
-      .order("id", { ascending: true })
-      .limit(10);
-
-    const messages = (history || []).map(m => ({
-      role: m.expediteur === "user" ? "user" : "assistant",
-      content: m.message
-    }));
-
-    messages.push({
-      role: "user",
-      content: message
+    const response = await anthropic.messages.create({
+      model: "claude-3-5-sonnet-latest",
+      max_tokens: 100,
+      messages: [
+        {
+          role: "user",
+          content: "Bonjour"
+        }
+      ]
     });
 
-    const response = await anthropic.messages.create({
-  model: "claude-3-5-sonnet-latest",
-  max_tokens: 200,
-  messages: messages
-});
-    
-const reply = response.content
-  .filter(block => block.type === "text")
-  .map(block => block.text)
-  .join("");
+    console.log("CLAUDE RESPONSE:", JSON.stringify(response));
+
+    const reply = response.content[0].text;
 
     return res.status(200).json({
       reply: reply
@@ -57,11 +29,12 @@ const reply = response.content
 
   } catch (error) {
 
-    console.error("ERREUR COMPLETE:", error);
+    console.error("ERROR:", error);
 
     return res.status(500).json({
       error: error.message
     });
 
   }
+
 }
