@@ -21,8 +21,8 @@ export default async function handler(req, res) {
 
     console.log("CLAUDE RESPONSE:", JSON.stringify(response));
 
-    const reply = response.content[0].text;
-
+const reply = response.content[0].text;
+    
     return res.status(200).json({
       reply: reply
     });
