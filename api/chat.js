@@ -3,7 +3,6 @@ import Anthropic from "@anthropic-ai/sdk";
 
 export default async function handler(req, res) {
   try {
-
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method not allowed" });
     }
@@ -22,8 +21,6 @@ export default async function handler(req, res) {
     if (!message) {
       return res.status(400).json({ error: "Message manquant" });
     }
-
-    console.log("MESSAGE RECU:", message);
 
     // récupérer historique
     const { data: history } = await supabase
@@ -49,23 +46,12 @@ export default async function handler(req, res) {
       messages: messages
     });
 
-    console.log("REPONSE CLAUDE:", response);
-
     const reply = response.content[0].text;
 
-    return res.status(200).json({
-      reply: reply
-    });
+    return res.status(200).json({ reply });
 
   } catch (error) {
-
     console.error("ERREUR COMPLETE:", error);
-
-    return res.status(500).json({
-      error: error.message
-    });
-
+    return res.status(500).json({ error: error.message });
   }
-}
-
 }
