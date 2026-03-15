@@ -46,12 +46,10 @@ export default async function handler(req, res) {
       messages: messages
     });
 
-    const reply = Array.isArray(response?.content)
-      ? response.content
-          .filter(c => c.type === "text")
-          .map(c => c.text)
-          .join("\n")
-      : "Pas de réponse";
+    const reply = response.content
+  .filter(block => block.type === "text")
+  .map(block => block.text)
+  .join("");
 
     return res.status(200).json({
       reply: reply
