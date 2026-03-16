@@ -5,23 +5,19 @@ const api = "https://support-chatbot-2-0.vercel.app/api/chat";
   
 function getProductInfo(){
 
-  if(window.ShopifyAnalytics 
-    && window.ShopifyAnalytics.meta 
-    && window.ShopifyAnalytics.meta.product){
+  if(window.ShopifyAnalytics &&
+     window.ShopifyAnalytics.meta &&
+     window.ShopifyAnalytics.meta.product){
 
     const product = window.ShopifyAnalytics.meta.product;
 
     return {
       title: product.title,
-      id: product.id,
-      vendor: product.vendor,
-      type: product.type,
-      variants: product.variants,
-      price: product.variants?.[0]?.price
+      price: product.variants?.[0]?.price,
+      vendor: product.vendor
     };
-
   }
-
+  
   return null;
 }
   
