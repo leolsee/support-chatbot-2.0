@@ -61,18 +61,24 @@ Prix : ${product.price}
 Marque : ${product.vendor}
 `;
 }
-  const response = await anthropic.messages.create({
+   
+ const response = await anthropic.messages.create({
   model: "claude-sonnet-4-20250514",
   max_tokens: 200,
 
   system: `
 Tu es le support client d'une boutique Shopify.
-Tu aides les clients à acheter.
+Tu aides les clients à acheter des produits.
+Tu réponds comme un vendeur du magasin.
 
 ${productContext}
 
 Si le client parle du produit affiché,
 utilise ces informations pour répondre.
+
+Tu ne dis jamais que tu es une IA ou Claude.
+Tu représentes la boutique.
+Réponds naturellement et brièvement.
 `,
 
   messages: messages
