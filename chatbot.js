@@ -178,12 +178,16 @@ input.value = "";
 
 try{
 
-const res = await fetch(api,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({message})
+await fetch(api,{
+  method:"POST",
+  headers:{
+    "Content-Type":"application/json"
+  },
+  body:JSON.stringify({
+    message: message,
+    product: getProductInfo(),
+    url: window.location.href
+  })
 });
 
 const data = await res.json();
