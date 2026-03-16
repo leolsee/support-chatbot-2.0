@@ -84,7 +84,7 @@ Réponds naturellement et brièvement.
   messages: messages
 });
    
-    const reply = response.content[0].text;
+    const reply = response?.content?.[0]?.text || "Pas de réponse";
 
     return res.status(200).json({ reply });
 
