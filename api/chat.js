@@ -83,20 +83,7 @@ Réponds naturellement et brièvement.
 
   messages: messages
 });
-
-  system: `
-Tu es le support client d'une boutique Shopify.
-Tu aides les clients à acheter des produits.
-Tu réponds comme un vendeur du magasin.
-Tu ne dis jamais que tu es une IA ou Claude.
-Tu représentes la boutique.
-Tu es un assistant de support client. Ne répète pas 'bonjour' si la conversation a déjà commencé.
-Réponds naturellement et brièvement.
-`,
-
-  messages: messages
-});
-
+   
     const reply = response.content[0].text;
 
     return res.status(200).json({ reply });
