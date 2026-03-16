@@ -24,7 +24,8 @@ import Anthropic from "@anthropic-ai/sdk";
       typeof req.body === "string"
         ? JSON.parse(req.body)
         : req.body;
-
+   
+    const product = body?.product;
     const message = body?.message;
 
     if (!message) {
@@ -49,9 +50,33 @@ import Anthropic from "@anthropic-ai/sdk";
       content: message
     });
 
-    const response = await anthropic.messages.create({
+   let productContext = "";
+
+if(product){
+  productContext = `
+Produit consulté par le client :
+
+Nom : ${product.title}
+Prix : ${product.price}
+Marque : ${product.vendor}
+`;
+}
+  const response = await anthropic.messages.create({
   model: "claude-sonnet-4-20250514",
   max_tokens: 200,
+
+  system: `
+Tu es le support client d'une boutique Shopify.
+Tu aides les clients à acheter.
+
+${productContext}
+
+Si le client parle du produit affiché,
+utilise ces informations pour répondre.
+`,
+
+  messages: messages
+});
 
   system: `
 Tu es le support client d'une boutique Shopify.
