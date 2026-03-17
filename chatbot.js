@@ -136,11 +136,11 @@ const res = await fetch(api,{
     "Content-Type":"application/json"
   },
   body: JSON.stringify({
-    message,
-    product,
-    userId: getUserId()
-  })
-});
+  message,
+  product,
+  userId: getUserId(),
+  shop: window.SupportBot?.shop
+})
 
 const data = await res.json();
 
