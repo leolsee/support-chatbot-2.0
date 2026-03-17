@@ -178,11 +178,28 @@ input.value = "";
 
 try{
 
-await fetch(api,{
+  function getProductData() {
+  return {
+    title: document.querySelector("h1")?.innerText || "",
+    price: document.querySelector('[class*="price"]')?.innerText || "",
+    description: document.querySelector("p")?.innerText || "",
+    url: window.location.href
+  };
+}
+  
+const product = getProductData();
+
+const res = await fetch(api,{
   method:"POST",
   headers:{
-    "Content-Type":"application/json"
+    "Content-Type":"application/json",
   },
+  body: JSON.stringify({
+    message,
+    product
+  })
+});
+  
   body:JSON.stringify({
     message: message,
     product: getProductInfo(),
