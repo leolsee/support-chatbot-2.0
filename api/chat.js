@@ -25,8 +25,8 @@ import Anthropic from "@anthropic-ai/sdk";
         ? JSON.parse(req.body)
         : req.body;
    
-    const product = body?.product;
     const message = body?.message;
+    const product = body?.product;
 
     if (!message) {
       return res.status(400).json({ error: "Message manquant" });
