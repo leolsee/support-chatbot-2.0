@@ -1,6 +1,29 @@
 import supabase from "../lib/supabase.js";
 import Anthropic from "@anthropic-ai/sdk";
 
+function isTrackingQuestion(message){
+  return message.toLowerCase().includes("colis") ||
+         message.toLowerCase().includes("commande") ||
+         message.toLowerCase().includes("livraison");
+}
+
+async function getOrderByEmail(email){
+
+  const res = await fetch(
+    `https://${process.env.SHOP_DOMAIN}/admin/api/2023-10/orders.json?email=${email}`,
+    {
+      headers: {
+        "X-Shopify-Access-Token": process.env.SHOPIFY_ACCESS_TOKEN,
+        "Content-Type": "application/json"
+      }
+    }
+  );
+
+  const data = await res.json();
+
+  return data.orders;
+}
+
  export default async function handler(req, res) {
 
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -30,6 +53,37 @@ import Anthropic from "@anthropic-ai/sdk";
     const message = body?.message;
     const product = body?.product;
     const userId = body?.userId || "anonymous";
+    const shop = body?.shop || "unknown";
+    const email = body?.email || null;
+
+   if(isTrackingQuestion(message) && !email){
+  return res.status(200).json({
+    reply: "📦 Pour suivre votre commande, pouvez-vous me donner votre email ?"
+  });
+}
+   
+   if(email){
+
+  const orders = await getOrderByEmail(email);
+
+  if(!orders.length){
+    return res.status(200).json({
+      reply: "❌ Je ne trouve aucune commande avec cet email."
+    });
+  }
+
+  const order = orders[0];
+
+  const tracking = order.fulfillments?.[0]?.tracking_number;
+  const company = order.fulfillments?.[0]?.tracking_company;
+  const status = order.fulfillment_status;
+
+  return res.status(200).json({
+    reply: `📦 Statut : ${status || "en préparation"}
+🚚 Transporteur : ${company || "non précisé"}
+🔎 Suivi : ${tracking || "pas encore disponible"}`
+  });
+}
 
     if (!message) {
       return res.status(400).json({ error: "Message manquant" });
@@ -39,7 +93,7 @@ import Anthropic from "@anthropic-ai/sdk";
     const { data: history } = await supabase
   .from("messages")
   .select("expediteur,message")
-  .eq("conversation_id", userId)
+  .eq("conversation_id", userId + "_" + shop)
   .order("id", { ascending: true })
   .limit(10);
 
@@ -104,12 +158,12 @@ Réponds naturellement, de façon courte et engageante.
 
   await supabase.from("messages").insert([
   {
-    conversation_id: userId,
+    conversation_id: userId + "_" + shop,
     expediteur: "user",
     message: message
   },
   {
-    conversation_id: userId,
+    conversation_id: userId + "_" + shop,
     expediteur: "assistant",
     message: reply
   }
