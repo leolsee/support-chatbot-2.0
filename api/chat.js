@@ -8,8 +8,10 @@ import Anthropic from "@anthropic-ai/sdk";
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
+   return res.status(200).json({
+  reply,
+  product
+});
     
   try {
     if (req.method !== "POST") {
@@ -27,6 +29,7 @@ import Anthropic from "@anthropic-ai/sdk";
    
     const message = body?.message;
     const product = body?.product;
+    const userId = body?.userId || "anonymous";
 
     if (!message) {
       return res.status(400).json({ error: "Message manquant" });
@@ -34,11 +37,11 @@ import Anthropic from "@anthropic-ai/sdk";
 
     // récupérer historique
     const { data: history } = await supabase
-      .from("messages")
-      .select("expediteur,message")
-      .eq("conversation_id", 1)
-      .order("id", { ascending: true })
-      .limit(10);
+  .from("messages")
+  .select("expediteur,message")
+  .eq("conversation_id", userId)
+  .order("id", { ascending: true })
+  .limit(10);
 
     const messages = (history || []).map(m => ({
       role: m.expediteur === "user" ? "user" : "assistant",
@@ -99,14 +102,14 @@ Réponds naturellement, de façon courte et engageante.
    
     const reply = response?.content?.[0]?.text || "Pas de réponse";
 
-   await supabase.from("messages").insert([
+  await supabase.from("messages").insert([
   {
-    conversation_id: 1,
+    conversation_id: userId,
     expediteur: "user",
     message: message
   },
   {
-    conversation_id: 1,
+    conversation_id: userId,
     expediteur: "assistant",
     message: reply
   }
