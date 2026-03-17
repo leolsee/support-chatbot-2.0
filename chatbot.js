@@ -2,7 +2,7 @@
 
 const api = "https://support-chatbot-2-0.vercel.app/api/chat";
 
-// 🧠 USER ID (multi users)
+// 🧠 USER ID
 function getUserId(){
   let id = localStorage.getItem("supportbot_user");
 
@@ -14,8 +14,8 @@ function getUserId(){
   return id;
 }
 
-// 🛒 ADD TO CART
-function addToCart(variantId){
+// 🛒 ADD TO CART (GLOBAL)
+window.addToCart = function(variantId){
   fetch('/cart/add.js', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -26,11 +26,10 @@ function addToCart(variantId){
   })
   .then(() => alert("Produit ajouté au panier 🛒"))
   .catch(() => alert("Erreur ajout panier"));
-}
+};
 
 // 📦 PRODUIT SHOPIFY
 function getProductInfo(){
-
   if(window.ShopifyAnalytics &&
      window.ShopifyAnalytics.meta &&
      window.ShopifyAnalytics.meta.product){
@@ -44,7 +43,6 @@ function getProductInfo(){
       variantId: product.variants?.[0]?.id
     };
   }
-
   return null;
 }
 
@@ -105,15 +103,13 @@ button.onclick = () => {
 
 // afficher message
 function addMessage(author, text, product){
-
-messages.innerHTML += `
-<div style="margin-bottom:8px;">
-<b>${author}:</b> ${text}
-${product?.variantId ? `<br><button onclick="addToCart(${product.variantId})">🛒 Ajouter au panier</button>` : ""}
-</div>
-`;
-
-messages.scrollTop = messages.scrollHeight;
+  messages.innerHTML += `
+  <div style="margin-bottom:8px;">
+  <b>${author}:</b> ${text}
+  ${product?.variantId ? `<br><button onclick="addToCart(${product.variantId})">🛒 Ajouter au panier</button>` : ""}
+  </div>
+  `;
+  messages.scrollTop = messages.scrollHeight;
 }
 
 // envoyer message
@@ -135,13 +131,14 @@ const res = await fetch(api,{
   headers:{
     "Content-Type":"application/json"
   },
- body: JSON.stringify({
-  message,
-  product,
-  userId: getUserId(),
-  shop: window.SupportBot?.shop,
-  email: message.includes("@") ? message : null
-})
+  body: JSON.stringify({
+    message,
+    product,
+    userId: getUserId(),
+    shop: window.SupportBot?.shop,
+    email: message.includes("@") ? message : null
+  })
+});
 
 const data = await res.json();
 
