@@ -2,13 +2,23 @@
 
 const api = "https://support-chatbot-2-0.vercel.app/api/chat";
 
-  function addToCart(variantId){
+// 🧠 USER ID (multi users)
+function getUserId(){
+  let id = localStorage.getItem("supportbot_user");
 
+  if(!id){
+    id = "user_" + Math.random().toString(36).substring(2,10);
+    localStorage.setItem("supportbot_user", id);
+  }
+
+  return id;
+}
+
+// 🛒 ADD TO CART
+function addToCart(variantId){
   fetch('/cart/add.js', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       id: variantId,
       quantity: 1
@@ -16,9 +26,9 @@ const api = "https://support-chatbot-2-0.vercel.app/api/chat";
   })
   .then(() => alert("Produit ajouté au panier 🛒"))
   .catch(() => alert("Erreur ajout panier"));
-
 }
-  
+
+// 📦 PRODUIT SHOPIFY
 function getProductInfo(){
 
   if(window.ShopifyAnalytics &&
@@ -30,50 +40,56 @@ function getProductInfo(){
     return {
       title: product.title,
       price: product.variants?.[0]?.price,
-      vendor: product.vendor
+      vendor: product.vendor,
+      variantId: product.variants?.[0]?.id
     };
   }
-  
+
   return null;
 }
-  
+
+// 🎨 UI
 const button = document.createElement("div");
 button.innerHTML = "💬 Chat Support";
 
-button.style.position = "fixed";
-button.style.bottom = "20px";
-button.style.right = "20px";
-button.style.background = "black";
-button.style.color = "white";
-button.style.padding = "10px 15px";
-button.style.borderRadius = "20px";
-button.style.cursor = "pointer";
-button.style.zIndex = "999999";
+Object.assign(button.style, {
+  position: "fixed",
+  bottom: "20px",
+  right: "20px",
+  background: "black",
+  color: "white",
+  padding: "10px 15px",
+  borderRadius: "20px",
+  cursor: "pointer",
+  zIndex: "999999"
+});
 
 const chat = document.createElement("div");
 
-chat.style.position = "fixed";
-chat.style.bottom = "70px";
-chat.style.right = "20px";
-chat.style.width = "320px";
-chat.style.height = "420px";
-chat.style.background = "white";
-chat.style.border = "1px solid #ddd";
-chat.style.borderRadius = "10px";
-chat.style.display = "none";
-chat.style.flexDirection = "column";
-chat.style.zIndex = "999999";
+Object.assign(chat.style, {
+  position: "fixed",
+  bottom: "70px",
+  right: "20px",
+  width: "320px",
+  height: "420px",
+  background: "white",
+  border: "1px solid #ddd",
+  borderRadius: "10px",
+  display: "none",
+  flexDirection: "column",
+  zIndex: "999999"
+});
 
 chat.innerHTML = `
-<div style="padding:10px;background:black;color:white;border-radius:10px 10px 0 0">
+<div style="padding:10px;background:black;color:white">
 Support AI
 </div>
 
-<div id="messages" style="flex:1;padding:10px;overflow:auto;font-size:14px"></div>
+<div id="messages" style="flex:1;padding:10px;overflow:auto"></div>
 
 <input id="chatInput"
 placeholder="Type a message..."
-style="border:none;border-top:1px solid #ddd;padding:10px;width:100%;outline:none">
+style="border:none;border-top:1px solid #ddd;padding:10px;width:100%">
 `;
 
 document.body.appendChild(button);
@@ -82,24 +98,25 @@ document.body.appendChild(chat);
 const messages = chat.querySelector("#messages");
 const input = chat.querySelector("#chatInput");
 
+// ouvrir chat
 button.onclick = () => {
-chat.style.display =
-chat.style.display === "none" ? "flex" : "none";
+  chat.style.display = chat.style.display === "none" ? "flex" : "none";
 };
 
+// afficher message
 function addMessage(author, text, product){
 
 messages.innerHTML += `
-<div>
+<div style="margin-bottom:8px;">
 <b>${author}:</b> ${text}
 ${product?.variantId ? `<br><button onclick="addToCart(${product.variantId})">🛒 Ajouter au panier</button>` : ""}
 </div>
 `;
 
 messages.scrollTop = messages.scrollHeight;
-
 }
 
+// envoyer message
 input.addEventListener("keypress", async (e)=>{
 if(e.key === "Enter"){
 
@@ -111,130 +128,23 @@ input.value = "";
 
 try{
 
-const res = await fetch(api,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-  
-body: JSON.stringify({
-  message: message,
-  product: getProductInfo(),
-  userId: getUserId()
-})
-
-const data = await res.json();
-
-addMessage("AI", data.reply || "Pas de réponse");
-
-}catch(err){
-
-addMessage("AI","Erreur serveur");
-
-}
-
-}
-});
-
-})();
-const button = document.createElement("div");
-button.innerHTML = "💬 Chat Support";
-
-button.style.position = "fixed";
-button.style.bottom = "20px";
-button.style.right = "20px";
-button.style.background = "black";
-button.style.color = "white";
-button.style.padding = "10px 15px";
-button.style.borderRadius = "20px";
-button.style.cursor = "pointer";
-button.style.zIndex = "999999";
-
-const chat = document.createElement("div");
-
-chat.style.position = "fixed";
-chat.style.bottom = "70px";
-chat.style.right = "20px";
-chat.style.width = "320px";
-chat.style.height = "420px";
-chat.style.background = "white";
-chat.style.border = "1px solid #ddd";
-chat.style.borderRadius = "10px";
-chat.style.display = "none";
-chat.style.flexDirection = "column";
-chat.style.zIndex = "999999";
-
-chat.innerHTML = `
-<div style="padding:10px;background:black;color:white;border-radius:10px 10px 0 0">
-Support AI
-</div>
-
-<div id="messages" style="flex:1;padding:10px;overflow:auto;font-size:14px"></div>
-
-<input id="chatInput"
-placeholder="Type a message..."
-style="border:none;border-top:1px solid #ddd;padding:10px;width:100%;outline:none">
-`;
-
-document.body.appendChild(button);
-document.body.appendChild(chat);
-
-const messages = chat.querySelector("#messages");
-const input = chat.querySelector("#chatInput");
-
-button.onclick = () => {
-chat.style.display =
-chat.style.display === "none" ? "flex" : "none";
-};
-
-function addMessage(author, text){
-messages.innerHTML += `<div><b>${author}:</b> ${text}</div>`;
-messages.scrollTop = messages.scrollHeight;
-}
-
-input.addEventListener("keypress", async (e)=>{
-if(e.key === "Enter"){
-
-const message = input.value;
-if(!message) return;
-
-addMessage("You", message);
-input.value = "";
-
-try{
-
-  function getProductData() {
-  return {
-    title: document.querySelector("h1")?.innerText || "",
-    price: document.querySelector('[class*="price"]')?.innerText || "",
-    description: document.querySelector("p")?.innerText || "",
-    url: window.location.href
-  };
-}
-  
-const product = getProductData();
+const product = getProductInfo();
 
 const res = await fetch(api,{
   method:"POST",
   headers:{
-    "Content-Type":"application/json",
+    "Content-Type":"application/json"
   },
   body: JSON.stringify({
     message,
-    product
-  })
-});
-  
-  body:JSON.stringify({
-    message: message,
-    product: getProductInfo(),
-    url: window.location.href
+    product,
+    userId: getUserId()
   })
 });
 
 const data = await res.json();
 
-addMessage("AI", data.reply || "Pas de réponse");
+addMessage("AI", data.reply || "Pas de réponse", data.product);
 
 }catch(err){
 
