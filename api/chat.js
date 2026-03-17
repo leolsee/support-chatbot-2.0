@@ -56,6 +56,33 @@ async function getOrderByEmail(email){
     const shop = body?.shop || "unknown";
     const email = body?.email || null;
 
+    function getFakeTracking() {
+  return {
+    status: "En cours de livraison 🚚",
+    date: "Arrive demain",
+    tracking: "FR123456789"
+  };
+}
+
+// SI LE CLIENT DEMANDE SA COMMANDE
+if (
+  message.toLowerCase().includes("commande") ||
+  message.toLowerCase().includes("colis") ||
+  message.toLowerCase().includes("livraison")
+) {
+
+  const tracking = getFakeTracking();
+
+  return res.status(200).json({
+    reply: `📦 Bonne nouvelle !
+
+Votre commande est actuellement : ${tracking.status}
+
+📅 Livraison estimée : ${tracking.date}
+🔎 Numéro de suivi : ${tracking.tracking}`
+  });
+}
+    
    if(isTrackingQuestion(message) && !email){
   return res.status(200).json({
     reply: "📦 Pour suivre votre commande, pouvez-vous me donner votre email ?"
