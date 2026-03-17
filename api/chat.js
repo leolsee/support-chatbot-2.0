@@ -50,15 +50,17 @@ import Anthropic from "@anthropic-ai/sdk";
       content: message
     });
 
-   let productContext = "";
+  let productContext = "";
 
-if(product){
+if (product) {
   productContext = `
-Produit consulté par le client :
+Produit actuel :
 
-Nom : ${product.title}
-Prix : ${product.price}
-Marque : ${product.vendor}
+Nom : ${product.title || "Non défini"}
+Prix : ${product.price || "Non défini"}
+Description : ${product.description || "Non définie"}
+Lien : ${product.url || ""}
+
 `;
 }
    
@@ -66,26 +68,50 @@ Marque : ${product.vendor}
   model: "claude-sonnet-4-20250514",
   max_tokens: 200,
 
-  system: `
+ system: `
 Tu es le support client d'une boutique Shopify.
-Tu aides les clients à acheter des produits.
-Tu réponds comme un vendeur du magasin.
+
+Ton objectif est d'aider le client à acheter.
 
 ${productContext}
 
-Si le client parle du produit affiché,
-utilise ces informations pour répondre.
+Règles :
 
-Tu ne dis jamais que tu es une IA ou Claude.
+- Tu parles comme un vendeur humain
+- Tu mets en avant les produits
+- Tu proposes des recommandations
+- Tu aides à choisir (taille, style, etc.)
+- Tu incites doucement à acheter
+
+Si le client parle du produit affiché :
+utilise les informations pour répondre de façon précise.
+
+Tu peux suggérer d'ajouter au panier ou de voir d'autres produits.
+
+Tu ne dis jamais que tu es une IA.
 Tu représentes la boutique.
-Réponds naturellement et brièvement.
-`,
 
+Réponds naturellement, de façon courte et engageante.
+`,
+  
   messages: messages
 });
    
     const reply = response?.content?.[0]?.text || "Pas de réponse";
 
+   await supabase.from("messages").insert([
+  {
+    conversation_id: 1,
+    expediteur: "user",
+    message: message
+  },
+  {
+    conversation_id: 1,
+    expediteur: "assistant",
+    message: reply
+  }
+]);
+   
     return res.status(200).json({ reply });
 
   } catch (error) {
