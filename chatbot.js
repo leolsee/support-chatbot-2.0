@@ -2,6 +2,22 @@
 
 const api = "https://support-chatbot-2-0.vercel.app/api/chat";
 
+  function addToCart(variantId){
+
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      id: variantId,
+      quantity: 1
+    })
+  })
+  .then(() => alert("Produit ajouté au panier 🛒"))
+  .catch(() => alert("Erreur ajout panier"));
+
+}
   
 function getProductInfo(){
 
@@ -71,9 +87,17 @@ chat.style.display =
 chat.style.display === "none" ? "flex" : "none";
 };
 
-function addMessage(author, text){
-messages.innerHTML += `<div><b>${author}:</b> ${text}</div>`;
+function addMessage(author, text, product){
+
+messages.innerHTML += `
+<div>
+<b>${author}:</b> ${text}
+${product?.variantId ? `<br><button onclick="addToCart(${product.variantId})">🛒 Ajouter au panier</button>` : ""}
+</div>
+`;
+
 messages.scrollTop = messages.scrollHeight;
+
 }
 
 input.addEventListener("keypress", async (e)=>{
@@ -92,10 +116,11 @@ method:"POST",
 headers:{
 "Content-Type":"application/json"
 },
-body:JSON.stringify({
+  
+body: JSON.stringify({
   message: message,
   product: getProductInfo(),
-  url: window.location.href
+  userId: getUserId()
 })
 
 const data = await res.json();
