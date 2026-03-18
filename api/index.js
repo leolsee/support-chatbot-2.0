@@ -1,3 +1,15 @@
+async function getOrders(shop, token) {
+  const res = await fetch(`https://${shop}/admin/api/2024-01/orders.json`, {
+    headers: {
+      "X-Shopify-Access-Token": token,
+      "Content-Type": "application/json",
+    },
+  });
+
+  const data = await res.json();
+  return data.orders;
+}
+
 export default async function handler(req, res) {
   const { code, shop } = req.query;
 
