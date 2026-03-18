@@ -23,7 +23,9 @@ async function getOrders(shop, token) {
 }
 
 export default async function handler(req, res) {
-  const { code, shop } = req.query;
+  return res.json({
+    reply: "ÇA MARCHE 🔥",
+  });
 
   // 👉 OAuth
   if (!code && shop) {
