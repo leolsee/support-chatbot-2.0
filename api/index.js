@@ -15,13 +15,13 @@ async function getOrders(shop, token) {
 export default async function handler(req, res) {
   const { code, shop } = req.query;
 
-  // 👉 1. OAuth
+  // 👉 OAuth
   if (!code && shop) {
     const redirectUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=read_products,read_orders,read_customers&redirect_uri=https://support-chatbot-2-0.vercel.app/api&state=123`;
     return res.redirect(redirectUrl);
   }
 
-  // 👉 2. Token
+  // 👉 Token
   if (code && shop) {
     try {
       const response = await fetch(
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // 👉 3. CHATBOT
+  // 👉 CHATBOT
   if (req.method === "POST") {
     try {
       console.log("🔥 POST reçu");
@@ -95,4 +95,9 @@ export default async function handler(req, res) {
     }
   }
 
-  // 👉 4. fallback
+  // 👉 fallback
+  return res.status(200).json({
+    status: "ok",
+    message: "Supportbot API running 🚀",
+  });
+}
