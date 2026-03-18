@@ -1,13 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Support Chatbot</title>
+  <title>Test Chat</title>
 </head>
 <body>
 
-<h1>Support AI</h1>
+<h1>Test chatbot</h1>
 
-<script src="./embed/widget.js"></script>
+<div id="messages" style="height:200px; overflow:auto; border:1px solid #ccc;"></div>
+<input id="chat-input" placeholder="Tape un message..." />
+
+<script>
+const input = document.getElementById("chat-input");
+const messages = document.getElementById("messages");
+
+function addMessage(author, text) {
+  messages.innerHTML += `<div><b>${author}:</b> ${text}</div>`;
+}
+
+input.addEventListener("keypress", async (e) => {
+  if (e.key === "Enter") {
+    const message = input.value;
+    input.value = "";
+
+    addMessage("You", message);
+
+    const res = await fetch("/api", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    });
+
+    const data = await res.json();
+    addMessage("AI", data.reply);
+  }
+});
+</script>
 
 </body>
 </html>
