@@ -66,6 +66,9 @@ export default async function handler(req, res) {
     const { message } = req.body;
     console.log("💬 message:", message);
 
+    console.log("🧠 SHOP:", process.env.SHOP_DOMAIN);
+    console.log("🧠 TOKEN:", process.env.SHOPIFY_ACCESS_TOKEN);
+
     const orders = await getOrders(
       process.env.SHOP_DOMAIN,
       process.env.SHOPIFY_ACCESS_TOKEN
