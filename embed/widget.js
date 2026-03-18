@@ -1,110 +1,57 @@
-(function () {
+console.log("🔥 widget chargé");
 
-const api = "https://support-chatbot-2-0.vercel.app/api/chat";
-
-const button = document.createElement("div");
-button.innerHTML = "💬 Chat Support";
-
-button.style.position = "fixed";
-button.style.bottom = "20px";
-button.style.right = "20px";
-button.style.background = "black";
-button.style.color = "white";
-button.style.padding = "10px 15px";
-button.style.borderRadius = "20px";
-button.style.cursor = "pointer";
-button.style.zIndex = "999999";
-
+// créer le chatbot
 const chat = document.createElement("div");
-
-chat.style.position = "fixed";
-chat.style.bottom = "70px";
-chat.style.right = "20px";
-chat.style.width = "320px";
-chat.style.height = "420px";
-chat.style.background = "white";
-chat.style.border = "1px solid #ddd";
-chat.style.borderRadius = "10px";
-chat.style.display = "none";
-chat.style.flexDirection = "column";
-chat.style.zIndex = "999999";
-chat.style.boxShadow = "0 10px 40px rgba(0,0,0,0.2)";
-
 chat.innerHTML = `
-<div style="padding:10px;background:black;color:white;border-radius:10px 10px 0 0">
-Support AI
-</div>
-
-<div id="messages" style="flex:1;padding:10px;overflow:auto;font-size:14px"></div>
-
-<input id="chatInput"
-placeholder="Type a message..."
-style="border:none;border-top:1px solid #ddd;padding:10px;width:100%;outline:none">
+  <div id="chatbox" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    z-index: 9999;
+  ">
+    <div id="messages" style="height:200px; overflow:auto;"></div>
+    <input id="chat-input" placeholder="Tape un message..." style="width:100%;" />
+  </div>
 `;
 
-document.body.appendChild(button);
 document.body.appendChild(chat);
 
-const messages = chat.querySelector("#messages");
-const input = chat.querySelector("#chatInput");
+// logique chatbot
+const input = document.getElementById("chat-input");
+const messages = document.getElementById("messages");
 
-button.onclick = () => {
-
-chat.style.display =
-chat.style.display === "none" ? "flex" : "none";
-
-};
-
-function addMessage(author, text){
-
-messages.innerHTML += `<div><b>${author}:</b> ${text}</div>`;
-messages.scrollTop = messages.scrollHeight;
-
+function addMessage(author, text) {
+  messages.innerHTML += `<div><b>${author}:</b> ${text}</div>`;
+  messages.scrollTop = messages.scrollHeight;
 }
 
-input.addEventListener("keypress", async (e)=>{
+input.addEventListener("keypress", async (e) => {
+  if (e.key === "Enter") {
+    const message = input.value;
+    if (!message) return;
 
-if(e.key === "Enter"){
+    addMessage("You", message);
+    input.value = "";
 
-const message = input.value.trim();
-if(!message) return;
+    try {
+      const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      });
 
-addMessage("You", message);
-input.value = "";
-
-addMessage("AI","Je réfléchis...");
-
-try{
-
-const res = await fetch(api,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({ message: message })
-});
-
-const data = await res.json();
-
-messages.lastChild.remove();
-
-const reply =
-data.reply ||
-data.response ||
-data.content ||
-"Pas de réponse";
-
-addMessage("AI", reply);
-
-}catch(err){
-
-messages.lastChild.remove();
-addMessage("AI","Erreur serveur");
-
-}
-
-}
-
+      const data = await res.json();
+      addMessage("AI", data.reply);
+    } catch (err) {
+      addMessage("AI", "Erreur serveur");
+    }
+  }
 });
 
 })();
