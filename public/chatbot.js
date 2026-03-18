@@ -102,53 +102,45 @@ button.onclick = () => {
 };
 
 // afficher message
-function addMessage(author, text, product){
+function addMessage(author, text) {
+  const messages = document.getElementById("messages");
+
   messages.innerHTML += `
-  <div style="margin-bottom:8px;">
-  <b>${author}:</b> ${text}
-  ${product?.variantId ? `<br><button onclick="addToCart(${product.variantId})">🛒 Ajouter au panier</button>` : ""}
-  </div>
+    <div style="margin-bottom:8px">
+      <b>${author}:</b> ${text}
+    </div>
   `;
+
   messages.scrollTop = messages.scrollHeight;
 }
 
-// envoyer message
-input.addEventListener("keypress", async (e)=>{
-if(e.key === "Enter"){
+const input = document.getElementById("chat-input");
 
-const message = input.value;
-if(!message) return;
+input.addEventListener("keypress", async (e) => {
+  if (e.key === "Enter") {
+    const message = input.value;
+    if (!message) return;
 
-addMessage("You", message);
-input.value = "";
+    addMessage("You", message);
+    input.value = "";
 
-try {
-  const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      message: message
-    }),
-  });
+    try {
+      const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: message,
+        }),
+      });
 
-  const text = await res.text();
-  console.log("RESPONSE RAW:", text);
+      const data = await res.json();
 
-  let data;
-
-  try {
-    data = JSON.parse(text);
-  } catch (e) {
-    console.error("JSON error:", text);
-    data = { reply: "Erreur serveur" };
+      addMessage("AI", data.reply || "Pas de réponse");
+    } catch (err) {
+      console.error("❌ ERROR:", err);
+      addMessage("AI", "Erreur serveur");
+    }
   }
-
-  addMessage("AI", data.reply || "Pas de réponse");
-
-} catch (err) {
-  console.error("❌ FRONT ERROR:", err);
-  addMessage("AI", "Erreur serveur");
-}
 });
