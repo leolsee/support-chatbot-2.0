@@ -52,7 +52,7 @@ export default async function handler(req, res) {
   }
 
   // 👉 3. CHATBOT (POST)
-  if (req.method === "POST") {
+ if (req.method === "POST") {
   try {
     console.log("🔥 POST reçu");
 
@@ -66,12 +66,33 @@ export default async function handler(req, res) {
 
     console.log("📦 orders:", orders);
 
+    // 👉 logique colis
+    if (
+      message.toLowerCase().includes("colis") ||
+      message.toLowerCase().includes("commande")
+    ) {
+      if (orders.length > 0) {
+        const order = orders[0];
+
+        return res.json({
+          reply: `📦 Commande #${order.name}\nStatut : ${
+            order.fulfillment_status || "en préparation"
+          }`,
+        });
+      } else {
+        return res.json({
+          reply: "Je ne trouve pas encore de commande 🤔",
+        });
+      }
+    }
+
+    // 👉 fallback
     return res.json({
-      reply: "TEST OK",
+      reply: "Je suis là pour vous aider 😊",
     });
 
   } catch (err) {
-    console.error("❌ ERREUR:", err);
+    console.error("❌ CHAT ERROR:", err);
     return res.status(500).json({ error: "server error" });
   }
 }
