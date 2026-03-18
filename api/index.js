@@ -1,5 +1,5 @@
-export default async function handler(req, res) {
+if (req.method === "POST") {
   return res.json({
-    reply: "ÇA MARCHE 🔥",
+    reply: "OK TEST BACKEND ✅",
   });
 }
