@@ -5,14 +5,12 @@
 </head>
 <body>
 
-<h1>Chat test</h1>
+<h1>Chat OK</h1>
 
 <div id="messages" style="height:200px; overflow:auto; border:1px solid #ccc;"></div>
 <input id="chat-input" placeholder="Tape un message..." />
 
 <script>
-console.log("JS chargé");
-
 const input = document.getElementById("chat-input");
 const messages = document.getElementById("messages");
 
