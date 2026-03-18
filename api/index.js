@@ -1,3 +1,6 @@
 export default function handler(req, res) {
-  res.status(200).send("SupportBot API is running 🚀");
+  res.status(200).json({
+    status: "ok",
+    message: "SupportBot API running 🚀"
+  });
 }
