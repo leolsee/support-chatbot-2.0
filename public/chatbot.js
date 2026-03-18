@@ -123,15 +123,15 @@ addMessage("You", message);
 input.value = "";
 
 try {
-  const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      message: message
-    }),
-  });
+ const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    message: message
+  }),
+});
 
   const text = await res.text();
   console.log("RESPONSE RAW:", text);
