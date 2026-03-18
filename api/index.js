@@ -7,30 +7,63 @@ async function getOrders(shop, token) {
   });
 
   const data = await res.json();
-
   console.log("🧠 Shopify response:", data);
 
   return data.orders || [];
 }
 
 export default async function handler(req, res) {
+  const { code, shop } = req.query;
 
-  // 👉 CHATBOT (POST)
+  // 👉 1. LANCER INSTALLATION
+  if (!code && shop) {
+    const redirectUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=read_products,read_orders,read_customers&redirect_uri=https://support-chatbot-2-0.vercel.app/api&state=123`;
+
+    return res.redirect(redirectUrl);
+  }
+
+  // 👉 2. RÉCUPÉRER TOKEN
+  if (code && shop) {
+    try {
+      const response = await fetch(
+        `https://${shop}/admin/oauth/access_token`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            client_id: process.env.SHOPIFY_API_KEY,
+            client_secret: process.env.SHOPIFY_API_SECRET,
+            code,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log("🔥 TOKEN:", data);
+
+      return res.json({
+        success: true,
+        token: data.access_token,
+      });
+
+    } catch (err) {
+      console.error("❌ TOKEN ERROR:", err);
+      return res.status(500).json({ error: "token error" });
+    }
+  }
+
+  // 👉 3. CHATBOT
   if (req.method === "POST") {
     try {
-      console.log("🔥 POST reçu");
-
       const { message } = req.body;
-
-      console.log("🧠 SHOP:", process.env.SHOP_DOMAIN);
-      console.log("🧠 TOKEN:", process.env.SHOPIFY_ACCESS_TOKEN);
 
       const orders = await getOrders(
         process.env.SHOP_DOMAIN,
         process.env.SHOPIFY_ACCESS_TOKEN
       );
-
-      console.log("📦 orders:", orders);
 
       if (
         message.toLowerCase().includes("colis") ||
@@ -52,20 +85,18 @@ export default async function handler(req, res) {
       }
 
       return res.json({
-        reply: "Je suis là pour vous aider 😊",
+        reply: "Je suis là 😊",
       });
 
     } catch (err) {
-      console.error("❌ ERREUR:", err);
+      console.error("❌ CHAT ERROR:", err);
       return res.status(500).json({
         reply: "Erreur serveur",
       });
     }
   }
 
-  // 👉 fallback
-  return res.status(200).json({
+  return res.json({
     status: "ok",
-    message: "Supportbot API running 🚀",
   });
 }
