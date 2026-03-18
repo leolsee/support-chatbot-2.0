@@ -11,7 +11,33 @@ async function getOrders(shop, token) {
 }
 
 export default async function handler(req, res) {
-  const { code, shop } = req.query;
+  const { message } = req.body;
+
+  const SHOP = process.env.SHOP_DOMAIN;
+  const TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
+
+  // 👉 récupérer commandes
+  const orders = await getOrders(SHOP, TOKEN);
+
+  // 👉 réponse simple test
+  if (message.includes("colis") || message.includes("commande")) {
+    if (orders.length > 0) {
+      const order = orders[0];
+
+      return res.json({
+        reply: `📦 Bonne nouvelle ! Votre commande #${order.name} est en cours.\nStatut : ${order.fulfillment_status || "en préparation"}`,
+      });
+    } else {
+      return res.json({
+        reply: "Je ne trouve pas encore de commande 🤔",
+      });
+    }
+  }
+
+  return res.json({
+    reply: "Je suis là pour vous aider 😊",
+  });
+}
 
   // 👉 1. SI PAS DE CODE → lancer OAuth
   if (!code && shop) {
