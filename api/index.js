@@ -7,6 +7,13 @@ async function getOrders(shop, token) {
   });
 
   const data = await res.json();
+
+  console.log("🧠 Shopify response:", data);
+
+  return data.orders || []; // 🔥 évite crash
+}
+
+  const data = await res.json();
   return data.orders;
 }
 
