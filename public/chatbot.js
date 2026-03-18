@@ -122,31 +122,29 @@ if(!message) return;
 addMessage("You", message);
 input.value = "";
 
-try{
+try {
+  const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message: message
+    }),
+  });
 
-const product = getProductInfo();
+  const text = await res.text();
+  console.log("RESPONSE RAW:", text);
 
-const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    message: message
-  }),
-});
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    throw new Error("Réponse invalide du serveur");
+  }
 
-const data = await res.json();
-
-addMessage("AI", data.reply || "Pas de réponse", data.product);
-
-}catch(err){
-
-addMessage("AI","Erreur serveur");
-
+  addMessage("AI", data.reply || "Pas de réponse");
+} catch (err) {
+  console.error("❌ FRONT ERROR:", err);
+  addMessage("AI", "Erreur serveur");
 }
-
-}
-});
-
-})();
