@@ -53,41 +53,28 @@ export default async function handler(req, res) {
 
   // 👉 3. CHATBOT (POST)
   if (req.method === "POST") {
-    try {
-      const { message } = req.body;
+  try {
+    console.log("🔥 POST reçu");
 
-      const orders = await getOrders(
-        process.env.SHOP_DOMAIN,
-        process.env.SHOPIFY_ACCESS_TOKEN
-      );
+    const { message } = req.body;
+    console.log("💬 message:", message);
 
-      if (
-        message.toLowerCase().includes("colis") ||
-        message.toLowerCase().includes("commande")
-      ) {
-        if (orders.length > 0) {
-          const order = orders[0];
+    const orders = await getOrders(
+      process.env.SHOP_DOMAIN,
+      process.env.SHOPIFY_ACCESS_TOKEN
+    );
 
-          return res.json({
-            reply: `📦 Commande #${order.name}\nStatut : ${
-              order.fulfillment_status || "en préparation"
-            }`,
-          });
-        } else {
-          return res.json({
-            reply: "Je ne trouve pas encore de commande 🤔",
-          });
-        }
-      }
+    console.log("📦 orders:", orders);
 
-      return res.json({
-        reply: "Je suis là pour vous aider 😊",
-      });
-    } catch (err) {
-      console.error("❌ CHAT ERROR:", err);
-      return res.status(500).json({ error: "server error" });
-    }
+    return res.json({
+      reply: "TEST OK",
+    });
+
+  } catch (err) {
+    console.error("❌ ERREUR:", err);
+    return res.status(500).json({ error: "server error" });
   }
+}
 
   // 👉 4. fallback
   return res.status(200).json({
