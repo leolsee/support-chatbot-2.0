@@ -21,7 +21,7 @@ chat.innerHTML = `
 document.body.appendChild(chat);
 
 // logique chatbot
-const input = document.getElementById("chat-input");
+const chatInput = document.getElementById("chat-input");
 const messages = document.getElementById("messages");
 
 function addMessage(author, text) {
@@ -29,13 +29,13 @@ function addMessage(author, text) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-input.addEventListener("keypress", async (e) => {
+chatInput.addEventListener("keypress", async (e) => {
   if (e.key === "Enter") {
-    const message = input.value;
+    const message = chatInput.value;
     if (!message) return;
 
     addMessage("You", message);
-    input.value = "";
+    chatInput.value = "";
 
     try {
       const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
@@ -49,9 +49,8 @@ input.addEventListener("keypress", async (e) => {
       const data = await res.json();
       addMessage("AI", data.reply);
     } catch (err) {
+      console.error(err);
       addMessage("AI", "Erreur serveur");
     }
   }
 });
-
-})();
