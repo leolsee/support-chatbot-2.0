@@ -127,17 +127,13 @@ try{
 const product = getProductInfo();
 
 const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
-  method:"POST",
-  headers:{
-    "Content-Type":"application/json"
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    message,
-    product,
-    userId: getUserId(),
-    shop: window.SupportBot?.shop,
-    email: message.includes("@") ? message : null
-  })
+    message: message
+  }),
 });
 
 const data = await res.json();
