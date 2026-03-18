@@ -21,39 +21,34 @@ async function getOrders(shop, token) {
   }
 }
 
-  // 👉 1. LANCER INSTALLATION
+export default async function handler(req, res) {
+  const { code, shop } = req.query;
+
+  // 👉 1. INSTALL
   if (!code && shop) {
     const redirectUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=read_products,read_orders,read_customers&redirect_uri=https://support-chatbot-2-0.vercel.app/api&state=123`;
-
     return res.redirect(redirectUrl);
   }
 
-  // 👉 2. RÉCUPÉRER TOKEN
+  // 👉 2. TOKEN
   if (code && shop) {
     try {
-      const response = await fetch(
-        `https://${shop}/admin/oauth/access_token`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            client_id: process.env.SHOPIFY_API_KEY,
-            client_secret: process.env.SHOPIFY_API_SECRET,
-            code,
-          }),
-        }
-      );
+      const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          client_id: process.env.SHOPIFY_API_KEY,
+          client_secret: process.env.SHOPIFY_API_SECRET,
+          code,
+        }),
+      });
 
       const data = await response.json();
-
       console.log("🔥 TOKEN:", data);
 
-      return res.json({
-        success: true,
-        token: data.access_token,
-      });
+      return res.json({ success: true, token: data.access_token });
 
     } catch (err) {
       console.error("❌ TOKEN ERROR:", err);
@@ -61,7 +56,7 @@ async function getOrders(shop, token) {
     }
   }
 
-  // 👉 3. CHATBOT
+  // 👉 3. CHAT
   if (req.method === "POST") {
     try {
       const { message } = req.body;
@@ -102,7 +97,6 @@ async function getOrders(shop, token) {
     }
   }
 
-  return res.json({
-    status: "ok",
-  });
+  // 👉 fallback
+  return res.json({ status: "ok" });
 }
