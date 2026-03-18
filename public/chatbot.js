@@ -126,7 +126,7 @@ try{
 
 const product = getProductInfo();
 
-const res = await fetch(api,{
+const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
   method:"POST",
   headers:{
     "Content-Type":"application/json"
