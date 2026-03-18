@@ -151,3 +151,4 @@ try {
   console.error("❌ FRONT ERROR:", err);
   addMessage("AI", "Erreur serveur");
 }
+});
