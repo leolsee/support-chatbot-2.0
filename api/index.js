@@ -78,7 +78,7 @@ export default async function handler(req, res) {
       message.toLowerCase().includes("colis") ||
       message.toLowerCase().includes("commande")
     ) {
-      if (orders.length > 0) {
+      if (orders && orders.length > 0) {
         const order = orders[0];
 
         return res.json({
