@@ -1,15 +1,25 @@
 async function getOrders(shop, token) {
-  const res = await fetch(`https://${shop}/admin/api/2024-01/orders.json`, {
-    headers: {
-      "X-Shopify-Access-Token": token,
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    console.log("🏪 SHOP:", shop);
+    console.log("🔑 TOKEN:", token);
 
-  const data = await res.json();
-  console.log("🧠 RAW SHOPIFY:", data);
+    const res = await fetch(`https://${shop}/admin/api/2024-01/orders.json`, {
+      headers: {
+        "X-Shopify-Access-Token": token,
+        "Content-Type": "application/json",
+      },
+    });
 
-  return data.orders || [];
+    const text = await res.text();
+    console.log("🧠 RAW SHOPIFY:", text);
+
+    const data = JSON.parse(text);
+
+    return data.orders || [];
+  } catch (err) {
+    console.error("❌ getOrders crash:", err);
+    return [];
+  }
 }
 
 export default async function handler(req, res) {
