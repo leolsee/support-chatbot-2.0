@@ -1,30 +1,38 @@
 export default async function handler(req, res) {
   const { code, shop } = req.query;
 
-  // 👉 Si Shopify appelle le callback
+  // 👉 CAS SHOPIFY (installation)
   if (code && shop) {
-    const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        client_id: process.env.SHOPIFY_API_KEY,
-        client_secret: process.env.SHOPIFY_API_SECRET,
-        code,
-      }),
-    });
+    try {
+      const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          client_id: process.env.SHOPIFY_API_KEY,
+          client_secret: process.env.SHOPIFY_API_SECRET,
+          code,
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    console.log("🔥 TOKEN:", data.access_token);
+      console.log("🔥 TOKEN:", data);
 
-    return res.status(200).json({
-      success: true,
-      token: data.access_token,
-    });
+      return res.status(200).json({
+        success: true,
+        token: data.access_token,
+      });
+    } catch (err) {
+      console.error("❌ ERROR:", err);
+      return res.status(500).json({ error: "token error" });
+    }
   }
 
-  // sinon route normale
-  res.status(200).json({ status: "ok", message: "Supportbot API running 🚀" });
+  // 👉 ROUTE NORMALE
+  res.status(200).json({
+    status: "ok",
+    message: "Supportbot API running 🚀",
+  });
 }
