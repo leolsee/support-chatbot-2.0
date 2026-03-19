@@ -1,18 +1,6 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Chatbot</title>
-</head>
-<body>
-
-<h1>Chat test</h1>
-
-<div id="messages" style="height:200px;overflow:auto;border:1px solid #ccc;"></div>
-
-<input id="chat-input" placeholder="Tape un message..." />
-
-<script src="/chatbot.js"></script>
-
-</body>
+<html>
+  <body style="background:red;">
+    <h1 style="color:white;">TEST OK</h1>
+  </body>
 </html>
