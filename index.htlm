@@ -1,31 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Support Chatbot</title>
+  <meta charset="UTF-8">
+  <title>Chatbot</title>
 </head>
 <body>
 
-  <h1>Chat test</h1>
+<h1>Chat test</h1>
 
-  <div
-    id="messages"
-    style="height: 240px; overflow: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;"
-  ></div>
+<div id="messages" style="height:200px;overflow:auto;border:1px solid #ccc;"></div>
 
-  <input
-    id="chat-input"
-    type="text"
-    placeholder="Tape un message..."
-    style="width: 300px; padding: 8px;"
-  />
+<input id="chat-input" placeholder="Tape un message..." />
 
-  <!-- TON CHATBOT LOCAL -->
-  <script src="/chatbot.js"></script>
-
-  <!-- TON WIDGET -->
-  <script src="/embed/widget.js"></script>
+<script src="/chatbot.js"></script>
 
 </body>
 </html>
