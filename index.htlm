@@ -1,43 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <title>Chatbot</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support Chatbot</title>
 </head>
 <body>
+  <h1>Chat test</h1>
 
-<h1>Chat OK</h1>
+  <div
+    id="messages"
+    style="height: 240px; overflow: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;"
+  ></div>
 
-<div id="messages" style="height:200px; overflow:auto; border:1px solid #ccc;"></div>
-<input id="chat-input" placeholder="Tape un message..." />
+  <input
+    id="chat-input"
+    type="text"
+    placeholder="Tape un message..."
+    style="width: 300px; padding: 8px;"
+  />
 
-<script>
-const input = document.getElementById("chat-input");
-const messages = document.getElementById("messages");
-
-function addMessage(author, text) {
-  messages.innerHTML += `<div><b>${author}:</b> ${text}</div>`;
-}
-
-input.addEventListener("keypress", async (e) => {
-  if (e.key === "Enter") {
-    const message = input.value;
-    input.value = "";
-
-    addMessage("You", message);
-
-    const res = await fetch("/api", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message })
-    });
-
-    const data = await res.json();
-    addMessage("AI", data.reply);
-  }
-});
-</script>
-
+  <script src="/public/chatbot.js"></script>
 </body>
 </html>
