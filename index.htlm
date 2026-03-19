@@ -6,6 +6,7 @@
   <title>Support Chatbot</title>
 </head>
 <body>
+
   <h1>Chat test</h1>
 
   <div
@@ -20,6 +21,11 @@
     style="width: 300px; padding: 8px;"
   />
 
+  <!-- TON CHATBOT LOCAL -->
   <script src="/public/chatbot.js"></script>
+
+  <!-- TON WIDGET -->
+  <script src="/embed/widget.js"></script>
+
 </body>
 </html>
