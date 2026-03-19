@@ -22,7 +22,7 @@
   />
 
   <!-- TON CHATBOT LOCAL -->
-  <script src="/public/chatbot.js"></script>
+  <script src="/chatbot.js"></script>
 
   <!-- TON WIDGET -->
   <script src="/embed/widget.js"></script>
