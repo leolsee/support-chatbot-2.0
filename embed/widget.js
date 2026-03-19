@@ -1,56 +1,60 @@
-console.log("🔥 widget chargé");
+export default async function handler(req, res) {
+  if (req.method === "GET") {
+    return res.status(200).json({
+      status: "ok",
+      message: "Supportbot API running 🚀"
+    });
+  }
 
-// créer le chatbot
-const chat = document.createElement("div");
-chat.innerHTML = `
-  <div id="chatbox" style="
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 300px;
-    background: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    z-index: 9999;
-  ">
-    <div id="messages" style="height:200px; overflow:auto;"></div>
-    <input id="chat-input" placeholder="Tape un message..." style="width:100%;" />
-  </div>
-`;
-
-document.body.appendChild(chat);
-
-// logique chatbot
-const chatInput = document.getElementById("chat-input");
-const messages = document.getElementById("messages");
-
-function addMessage(author, text) {
-  messages.innerHTML += `<div><b>${author}:</b> ${text}</div>`;
-  messages.scrollTop = messages.scrollHeight;
-}
-
-chatInput.addEventListener("keypress", async (e) => {
-  if (e.key === "Enter") {
-    const message = chatInput.value;
-    if (!message) return;
-
-    addMessage("You", message);
-    chatInput.value = "";
-
+  if (req.method === "POST") {
     try {
-      const res = await fetch("https://support-chatbot-2-0.vercel.app/api", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message }),
-      });
+      const { message } = req.body || {};
 
-      const data = await res.json();
-      addMessage("AI", data.reply);
-    } catch (err) {
-      console.error(err);
-      addMessage("AI", "Erreur serveur");
+      if (!message) {
+        return res.status(400).json({
+          reply: "Message manquant."
+        });
+      }
+
+      const lower = message.toLowerCase();
+
+      if (lower.includes("bonjour") || lower.includes("salut")) {
+        return res.status(200).json({
+          reply: "Bonjour 👋 Comment puis-je vous aider aujourd’hui ?"
+        });
+      }
+
+      if (lower.includes("prix")) {
+        return res.status(200).json({
+          reply: "Nos prix varient selon les produits. Vous cherchez un vêtement, un accessoire ou autre chose ?"
+        });
+      }
+
+      if (lower.includes("colis") || lower.includes("commande")) {
+        return res.status(200).json({
+          reply: "📦 Pour suivre votre commande, merci de me donner votre email ou votre numéro de commande."
+        });
+      }
+
+      if (lower.includes("@")) {
+        return res.status(200).json({
+          reply: "Merci 🙌 Nous avons bien reçu votre email. Un conseiller ou le système de suivi pourra l’utiliser pour retrouver votre commande."
+        });
+      }
+
+      return res.status(200).json({
+        reply: "Je suis là pour vous aider 😊 Vous pouvez me demander les prix, le suivi de commande ou des infos produits."
+      });
+    } catch (error) {
+      console.error("API ERROR:", error);
+
+      return res.status(500).json({
+        reply: "Erreur serveur"
+      });
     }
   }
-});
+
+  return res.status(405).json({
+    reply: "Méthode non autorisée"
+  });
+}
